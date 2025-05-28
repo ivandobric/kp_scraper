@@ -1,3 +1,5 @@
+from contextlib import nullcontext
+
 from selenium import webdriver
 from selenium.common import NoSuchElementException
 from selenium.webdriver.common.by import By
@@ -36,6 +38,7 @@ for i in range(1,int(num_of_pages)+1):
         product_data = {
             "Name" : product.find_element(By.CSS_SELECTOR, ".AdItem_name__Knlo6").text,
             "Price" : product.find_element(By.CSS_SELECTOR, ".AdItem_price__SkT1P").text,
+            "Location": product.find_element(By.CSS_SELECTOR, ".AdItem_originAndPromoLocation__PmiaP > p").text,
             "Info" : product.find_element(By.CSS_SELECTOR, ".AdItem_adInfoHolder__FYK1b p").text,
             "URL" : product.find_element(By.CSS_SELECTOR, ".Link_link__2iGTE.Link_inherit__fCY5K").get_attribute("href")
         }
@@ -44,7 +47,7 @@ for i in range(1,int(num_of_pages)+1):
 csv_file = "products.csv"
 
 with open(csv_file, mode="w", newline="\n", encoding="utf-8") as file:
-    writer = csv.DictWriter(file,fieldnames=["Name","Price","Info","URL"])
+    writer = csv.DictWriter(file,fieldnames=["Name","Price","Location","Info","URL"])
     writer.writeheader()
     writer.writerows(extracted_products)
 
