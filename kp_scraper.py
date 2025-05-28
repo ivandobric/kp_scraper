@@ -13,7 +13,12 @@ driver = webdriver.Chrome(
     options=options
     )
 
-URL = "ENTER_URL_HERE"
+input_URL = "ENTER_URL_HERE"
+if input_URL.endswith("&page=1"):
+    URL = input_URL.removesuffix("&page=1")
+else:
+    URL = input_URL
+
 driver.get(URL)
 
 try:
@@ -23,9 +28,9 @@ except NoSuchElementException:
     num_of_pages = 1
 
 extracted_products = []
-for i in range(1,int(num_of_pages)):
-    URL += f"&page={i}"
-    driver.get(URL)
+for i in range(1,int(num_of_pages)+1):
+    new_URL = URL + "&page=" + str(i)
+    driver.get(new_URL)
     products = driver.find_elements(By.CSS_SELECTOR, ".AdItem_adHolder__CWcMj")
     for product in products:
         product_data = {
