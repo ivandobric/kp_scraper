@@ -3,6 +3,14 @@ from selenium.common import NoSuchElementException
 from selenium.webdriver.common.by import By
 import csv
 
+CSS_PAGES = ".Pagination_numbers__9OjwH"
+CSS_PRODUCT = ".AdItem_adHolder__CWcMj"
+CSS_NAME = ".AdItem_name__Knlo6"
+CSS_PRICE = ".AdItem_price__SkT1P"
+CSS_LOCATION = ".AdItem_originAndPromoLocation__PmiaP > p"
+CSS_INFO = ".AdItem_adInfoHolder__FYK1b p"
+CSS_URL = ".Link_link__2iGTE.Link_inherit__fCY5K"
+
 options = webdriver.ChromeOptions()
 # Block images
 options.add_argument("--blink-settings=imagesEnabled=false")
@@ -22,7 +30,7 @@ else:
 driver.get(URL)
 
 try:
-    page_list = driver.find_element(By.CSS_SELECTOR,".Pagination_numbers__9OjwH").find_elements(By.TAG_NAME, "div")
+    page_list = driver.find_element(By.CSS_SELECTOR,CSS_PAGES).find_elements(By.TAG_NAME, "div")
     num_of_pages = page_list[-1].text
 except NoSuchElementException:
     num_of_pages = 1
@@ -31,14 +39,14 @@ extracted_products = []
 for i in range(1,int(num_of_pages)+1):
     new_URL = URL + "&page=" + str(i)
     driver.get(new_URL)
-    products = driver.find_elements(By.CSS_SELECTOR, ".AdItem_adHolder__CWcMj")
+    products = driver.find_elements(By.CSS_SELECTOR, CSS_PRODUCT)
     for product in products:
         product_data = {
-            "Name" : product.find_element(By.CSS_SELECTOR, ".AdItem_name__Knlo6").text,
-            "Price" : product.find_element(By.CSS_SELECTOR, ".AdItem_price__SkT1P").text,
-            "Location": product.find_element(By.CSS_SELECTOR, ".AdItem_originAndPromoLocation__PmiaP > p").text,
-            "Info" : product.find_element(By.CSS_SELECTOR, ".AdItem_adInfoHolder__FYK1b p").text,
-            "URL" : product.find_element(By.CSS_SELECTOR, ".Link_link__2iGTE.Link_inherit__fCY5K").get_attribute("href")
+            "Name" : product.find_element(By.CSS_SELECTOR, CSS_NAME).text,
+            "Price" : product.find_element(By.CSS_SELECTOR, CSS_PRICE).text,
+            "Location": product.find_element(By.CSS_SELECTOR, CSS_LOCATION).text,
+            "Info" : product.find_element(By.CSS_SELECTOR, CSS_INFO).text,
+            "URL" : product.find_element(By.CSS_SELECTOR, CSS_URL).get_attribute("href")
         }
         extracted_products.append(product_data)
 
