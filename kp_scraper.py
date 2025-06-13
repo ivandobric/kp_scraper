@@ -21,11 +21,12 @@ options.add_argument("--blink-settings=imagesEnabled=false")
 # Headless mode
 options.add_argument("--headless=new")
 
+input_URL = input("ENTER KUPUJEMPRODAJEM URL:\n")
+
 driver = webdriver.Chrome(
     options=options
     )
 
-input_URL = "ENTER_URL_HERE"
 if input_URL.endswith("&page=1"):
     URL = input_URL.removesuffix("&page=1")
 else:
