@@ -11,6 +11,9 @@ CSS_NAME = ".AdItem_name__Knlo6"
 CSS_PRICE = ".AdItem_price__SkT1P"
 CSS_EXCHANGE_PRODUCT = ".AdItem_exchange__ZQj3Q"
 CSS_LOCATION = ".AdItem_originAndPromoLocation__PmiaP > p"
+CSS_VIEWS_FAVORITES = ".AdItem_count__pO9LE"
+CSS_IMMEDIATELY_AVAILABLE = ".AdItem_immediateAvailable__zp3z3"
+CSS_BOX = ".Tooltip_root__ICZHx"
 CSS_INFO = ".AdItem_adInfoHolder__FYK1b p"
 CSS_URL = ".Link_link__2iGTE.Link_inherit__fCY5K"
 
@@ -51,6 +54,8 @@ for i in range(1,int(num_of_pages)+1):
         product_data = {
             "Name" : product.find_element(By.CSS_SELECTOR, CSS_NAME).text,
             "Location": product.find_element(By.CSS_SELECTOR, CSS_LOCATION).text,
+            "Views" : int(product.find_elements(By.CSS_SELECTOR, CSS_VIEWS_FAVORITES)[0].text.replace(".", "")),
+            "Favorites" : int(product.find_elements(By.CSS_SELECTOR, CSS_VIEWS_FAVORITES)[1].text.replace(".", "")),
             "Info" : product.find_element(By.CSS_SELECTOR, CSS_INFO).text,
             "URL" : product.find_element(By.CSS_SELECTOR, CSS_URL).get_attribute("href")
         }
@@ -58,9 +63,9 @@ for i in range(1,int(num_of_pages)+1):
         price = product.find_element(By.CSS_SELECTOR, CSS_PRICE).text.replace(".","")
         product_data["Price"] = price
         if price.endswith("din"):
-            product_data[f"Price in RSD"] = float(price.removesuffix("din"))
+            product_data["Price in RSD"] = float(price.removesuffix("din"))
         else:
-            product_data[f"Price in RSD"] = float(price.removesuffix("€")) * exchange_rate
+            product_data["Price in RSD"] = float(price.removesuffix("€")) * exchange_rate
 
         try:
             _ = product.find_element(By.CSS_SELECTOR, CSS_EXCHANGE_PRODUCT).text
@@ -68,13 +73,19 @@ for i in range(1,int(num_of_pages)+1):
         except NoSuchElementException:
             product_data["Exchange"] = "No"
 
+        try:
+            _ = product.find_element(By.CSS_SELECTOR,CSS_IMMEDIATELY_AVAILABLE).find_element(By.CSS_SELECTOR,CSS_BOX)
+            product_data["Immediately available"] = "Yes"
+        except NoSuchElementException:
+            product_data["Immediately available"] = "No"
+
         extracted_products.append(product_data)
 
 print("Finished scraping at " + datetime.now().strftime("%H:%M:%S"))
 csv_file = "products.csv"
 
 with open(csv_file, mode="w", newline="\n", encoding="utf-8") as file:
-    writer = csv.DictWriter(file,fieldnames=["Name","Price",f"Price in RSD","Exchange","Location","Info","URL"])
+    writer = csv.DictWriter(file,fieldnames=["Name","Price","Price in RSD","Immediately available","Exchange","Location","Views","Favorites","Info","URL"])
     writer.writeheader()
     writer.writerows(extracted_products)
 
